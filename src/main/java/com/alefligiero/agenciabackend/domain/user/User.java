@@ -37,14 +37,25 @@ public class User implements Serializable, UserDetails {
     private Instant updatedAt;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "users_role",
+    @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns= @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private Set<Role> roles = new HashSet<>();
 
+    @PrePersist
+    public void prePersist() {
+        this.setCreatedAt(Instant.now());
+        this.setUpdatedAt(Instant.now());
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.setUpdatedAt(Instant.now());
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).toList();
+        return roles.stream().map(role -> new SimpleGrantedAuthority(role.getAuthority())).toList();
     }
 
     @Override
