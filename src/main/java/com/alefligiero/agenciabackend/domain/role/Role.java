@@ -19,5 +19,5 @@ public class Role implements Serializable {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private String authority;
+    private String name;
 }
