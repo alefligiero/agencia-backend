@@ -5,8 +5,11 @@ import com.alefligiero.agenciabackend.domain.role.RoleRequestDTO;
 import com.alefligiero.agenciabackend.domain.role.RoleResponseDTO;
 import com.alefligiero.agenciabackend.mappers.RoleMapper;
 import com.alefligiero.agenciabackend.repositories.RoleRepository;
+import com.alefligiero.agenciabackend.services.exceptions.DatabaseException;
+import com.alefligiero.agenciabackend.services.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +36,7 @@ public class RoleService {
         return roleRepository
                 .findById(id)
                 .map(RoleMapper::toResponseDTO)
-                .orElseThrow();
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found id: " + id));
     }
 
     @Transactional(readOnly = true)
@@ -41,7 +44,7 @@ public class RoleService {
         return roleRepository
                 .findByName(name)
                 .map(RoleMapper::toResponseDTO)
-                .orElseThrow();
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found name: " + name));
     }
 
     @Transactional
@@ -54,7 +57,7 @@ public class RoleService {
     public RoleResponseDTO updateRole(UUID id, RoleRequestDTO dto) {
         Role role = roleRepository
                 .findById(id)
-                .orElseThrow();
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found id: " + id));
         RoleMapper.copyDtoToEntity(dto, role);
         return RoleMapper.toResponseDTO(roleRepository.save(role));
 
@@ -64,12 +67,12 @@ public class RoleService {
     @Transactional
     public void deleteRole(UUID id) {
         if (!roleRepository.existsById(id)) {
-            throw new Exception("Role not found id " + id);
+            throw new ResourceNotFoundException("Role not found id: " + id);
         }
         try {
             roleRepository.deleteById(id);
-        } catch (Exception e) {
-            throw new Exception("Role not found id " + id);
+        } catch (DataIntegrityViolationException e) {
+            throw new DatabaseException("Integrity violation");
         }
     }
 }
