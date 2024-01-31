@@ -32,10 +32,4 @@ public class UserMapper {
                 .roles(roles)
                 .build();
     }
-
-    public static void copyDtoToEntity(UserEditDTO dto, User user) {
-        user.setFirstName(dto.firstName());
-        user.setLastName(dto.lastName());
-    }
-
 }

@@ -70,9 +70,28 @@ public class UserService {
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found id: " + id));
 
-        UserMapper.copyDtoToEntity(dto, user);
+        user.setFirstName(dto.firstName());
+        user.setLastName(dto.lastName());
 
         return UserMapper.toResponseDTO(userRepository.save(user));
+    }
+
+    @SneakyThrows
+    @Transactional
+    public boolean updateUserPassword(UUID id, UserEditPasswordDTO dto) {
+        User user = userRepository
+                .findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found id: " + id));
+
+        if (!passwordEncoder.matches(dto.oldPassword(), user.getPassword())) {
+            return false;
+        }
+
+        user.setPassword(passwordEncoder.encode(dto.newPassword()));
+
+        userRepository.save(user);
+
+        return true;
     }
 
     @SneakyThrows

@@ -2,8 +2,10 @@ package com.alefligiero.agenciabackend.controllers;
 
 import com.alefligiero.agenciabackend.domain.user.UserCreateDTO;
 import com.alefligiero.agenciabackend.domain.user.UserEditDTO;
+import com.alefligiero.agenciabackend.domain.user.UserEditPasswordDTO;
 import com.alefligiero.agenciabackend.domain.user.UserResponseDTO;
 import com.alefligiero.agenciabackend.services.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,7 +40,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserResponseDTO> createUser(@RequestBody UserCreateDTO dto) {
+    public ResponseEntity<UserResponseDTO> createUser(@RequestBody @Valid UserCreateDTO dto) {
         UserResponseDTO user = userService.createUser(dto);
         URI uri = URI.create("/api/v1/users/" + user.id());
 
@@ -46,8 +48,14 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable UUID id, @RequestBody UserEditDTO dto) {
+    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable UUID id, @RequestBody @Valid UserEditDTO dto) {
         return ResponseEntity.ok(userService.updateUser(id, dto));
+    }
+
+    @PutMapping("/{id}/password")
+    public ResponseEntity<Void> updateUserPassword(@PathVariable UUID id, @RequestBody @Valid UserEditPasswordDTO dto) {
+        boolean isUpdated = userService.updateUserPassword(id, dto);
+        return isUpdated ? ResponseEntity.ok().build() : ResponseEntity.unprocessableEntity().build();
     }
 
     @DeleteMapping("/{id}")
