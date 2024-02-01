@@ -76,6 +76,17 @@ public class UserService {
         return UserMapper.toResponseDTO(userRepository.save(user));
     }
 
+    @Transactional
+    public UserResponseDTO updateUserEmail(UUID id, UserEditEmailDTO dto) {
+        User user = userRepository
+                .findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found id: " + id));
+
+        user.setEmail(dto.newEmail());
+
+        return UserMapper.toResponseDTO(userRepository.save(user));
+    }
+
     @SneakyThrows
     @Transactional
     public boolean updateUserPassword(UUID id, UserEditPasswordDTO dto) {

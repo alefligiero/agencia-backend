@@ -19,7 +19,6 @@ public class UserCreateValidator implements ConstraintValidator<UserCreateValid,
     public boolean isValid(UserCreateDTO dto, ConstraintValidatorContext context) {
 
         List<FieldMessage> list = new ArrayList<>();
-        System.out.println("HOPE");
 
         if (repository.existsUserByEmailIgnoreCase(dto.email())) {
             list.add(new FieldMessage("email", "Email já existente"));

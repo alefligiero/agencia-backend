@@ -1,9 +1,6 @@
 package com.alefligiero.agenciabackend.controllers;
 
-import com.alefligiero.agenciabackend.domain.user.UserCreateDTO;
-import com.alefligiero.agenciabackend.domain.user.UserEditDTO;
-import com.alefligiero.agenciabackend.domain.user.UserEditPasswordDTO;
-import com.alefligiero.agenciabackend.domain.user.UserResponseDTO;
+import com.alefligiero.agenciabackend.domain.user.*;
 import com.alefligiero.agenciabackend.services.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +49,12 @@ public class UserController {
         return ResponseEntity.ok(userService.updateUser(id, dto));
     }
 
-    @PutMapping("/{id}/password")
+    @PutMapping("/{id}/update-email")
+    public ResponseEntity<UserResponseDTO> updateUserEmail(@PathVariable UUID id, @RequestBody @Valid UserEditEmailDTO dto) {
+        return ResponseEntity.ok(userService.updateUserEmail(id, dto));
+    }
+
+    @PutMapping("/{id}/update-password")
     public ResponseEntity<Void> updateUserPassword(@PathVariable UUID id, @RequestBody @Valid UserEditPasswordDTO dto) {
         boolean isUpdated = userService.updateUserPassword(id, dto);
         return isUpdated ? ResponseEntity.ok().build() : ResponseEntity.unprocessableEntity().build();
