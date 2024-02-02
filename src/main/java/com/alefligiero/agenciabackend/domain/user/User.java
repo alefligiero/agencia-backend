@@ -42,6 +42,10 @@ public class User implements Serializable, UserDetails {
             inverseJoinColumns= @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private Set<Role> roles = new HashSet<>();
 
+    public boolean isAdmin() {
+        return this.getRoles().stream().anyMatch(role -> role.getName().equals("ROLE_ADMIN"));
+    }
+
     @PrePersist
     public void prePersist() {
         this.setCreatedAt(Instant.now());
